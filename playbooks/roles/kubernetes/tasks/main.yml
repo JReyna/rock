@@ -1,0 +1,51 @@
+---
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  when: ansible_os_family == 'RedHat'
+
+- name: Ensure Kernel setting for net.bridge.bridge-nf-call-iptables
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+    ignoreerrors: yes
+  when: ansible_os_family == 'RedHat'
+
+- include: centos-docker.yml
+  when: ansible_os_family == 'RedHat' 
+
+- include: centos-kubernetes.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Disable firewalld
+  systemd: 
+    name: firewalld  
+    enabled: no 
+    state: stopped
+  with_items:
+    - firewalld
+  when: ansible_os_family == 'RedHat'
+
+- name: Disable firewalld
+  systemd: 
+    name: "{{item}}"
+    enabled: no 
+    state: stopped
+  with_items:
+    - firewalld
+  when: ansible_os_family == 'RedHat'
+
+- name: Enable systemd components for Kubernetes
+  systemd: 
+    name: "{{item}}"
+    enabled: yes
+    state: started
+  with_items:
+    - docker
+    - kubelet
+  when: ansible_os_family == 'RedHat'
+

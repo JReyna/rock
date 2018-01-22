@@ -1,0 +1,2 @@
+# CentOS Kubernetes installer
+
