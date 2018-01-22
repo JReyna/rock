@@ -1,15 +1,5 @@
 ---
 
-- name: Disable swap
-  lineinfile:
-    dest: /etc/fstab
-    regexp: '^/[\S]+\s+none\s+swap '
-    state: absent
-
-- name: Swap Off
-  command: swapoff --all
-  ignore_errors: yes
-
 - name: Add Kubernetes CentOS7 yum repo
   yum_repository:
     name: kubernetes
@@ -17,18 +7,9 @@
     baseurl: http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
     enabled: yes
     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg
-    gpgcheck: no    
+    gpgcheck: no
     state: present
 
-- name: Install EPEL repo.
-  yum:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
-    state: present
-- name: Import EPEL GPG key.
-  rpm_key:
-    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
-    state: present
-    
 - name: Install Kubernetes basics
   yum: name="{{item}}" state=installed
   with_items:
@@ -40,9 +21,10 @@
     - ethtool
     - python-pip
 
-- name: Install Docker Py
-  pip:
-    name: docker-py
+# TODO Necessary?
+#- name: Install Docker Py
+#  pip:
+#    name: docker-py
 
 - name: Pull K8s Docker images
   docker_image:
@@ -54,7 +36,6 @@
 
 - name: Ensure kubelet is started and enabled at boot.
   service:
-    name: kubelet 
+    name: kubelet
     state: started
     enabled: yes
-
