@@ -16,31 +16,31 @@
   when: ansible_os_family == 'RedHat'
 
 - include: centos-docker.yml
-  when: ansible_os_family == 'RedHat' 
+  when: ansible_os_family == 'RedHat'
 
-- include: centos-kubernetes.yml
+- import_tasks: centos-kubernetes.yml
   when: ansible_os_family == 'RedHat'
 
 - name: Disable firewalld
-  systemd: 
-    name: firewalld  
-    enabled: no 
+  systemd:
+    name: firewalld
+    enabled: no
     state: stopped
   with_items:
     - firewalld
   when: ansible_os_family == 'RedHat'
 
 - name: Disable firewalld
-  systemd: 
+  systemd:
     name: "{{item}}"
-    enabled: no 
+    enabled: no
     state: stopped
   with_items:
     - firewalld
   when: ansible_os_family == 'RedHat'
 
 - name: Enable systemd components for Kubernetes
-  systemd: 
+  systemd:
     name: "{{item}}"
     enabled: yes
     state: started
@@ -48,4 +48,3 @@
     - docker
     - kubelet
   when: ansible_os_family == 'RedHat'
-

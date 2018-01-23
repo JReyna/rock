@@ -94,6 +94,8 @@
 - hosts: kubernetes
   roles:
     - kubernetes
+  # We will want to add this in after testing
+  #gather_facts: no
 
 # Harbor must run last so that it uploads all containers installed on the machine.
 # Harbor has compose file issue, disabling for now
