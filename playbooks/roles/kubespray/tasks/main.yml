@@ -50,3 +50,7 @@
     owner: root
     group: root
     force: yes
+
+- name: Run kubespray
+  chdir: "{{ kubespray_dir }}"
+  command: ansible-playbook -i inventory/inventory.yml cluster.yml -b -v --ask-pass
