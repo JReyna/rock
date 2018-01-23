@@ -10,6 +10,16 @@
     gpgcheck: no
     state: present
 
+- name: Add Kubernetes CentOS7 yum repo
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes Yum Repo
+    baseurl: http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
+    enabled: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg
+    gpgcheck: no
+    state: present
+
 - name: Install Kubernetes basics
   yum: name="{{item}}" state=installed
   with_items:
@@ -19,7 +29,7 @@
     - kubernetes-cni
     - ebtables
     - ethtool
-    - python-pip
+#    - python-pip
 
 # TODO Necessary?
 #- name: Install Docker Py

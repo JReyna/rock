@@ -15,6 +15,10 @@ all:
       children:
         sensors:
 
+    server-common:
+      children:
+        servers:
+
     bro:
       children:
         sensors:
@@ -59,6 +63,10 @@ all:
     kafka:
       children:
         sensors:
+
+    kubernetes:
+      children:
+        master-servers:
 
     harbor:
       children:

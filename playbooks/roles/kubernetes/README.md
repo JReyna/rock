@@ -74,3 +74,12 @@ Although each Pod has a unique IP address, those IPs are not exposed outside the
 
 <h4>Start Bash Session in Container</h4>
 `kubectl exec -ti $POD_NAME bash`
+
+<h4>Expose a Node Port</h4>
+`kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080`
+
+<h4>View Services</h4>
+`kubectl get services`
+
+<h4>Apply a New Label</h4>
+`kubectl label pod $POD_NAME app=v1`
