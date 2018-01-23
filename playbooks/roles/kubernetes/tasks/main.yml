@@ -15,9 +15,6 @@
     ignoreerrors: yes
   when: ansible_os_family == 'RedHat'
 
-- include: centos-docker.yml
-  when: ansible_os_family == 'RedHat'
-
 - import_tasks: centos-kubernetes.yml
   when: ansible_os_family == 'RedHat'
 
