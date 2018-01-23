@@ -10,6 +10,7 @@
   git:
     repo: 'https://github.com/kubernetes-incubator/kubespray.git'
     dest: "{{ kubespray_dir }}"
+    force: yes
 
 - name: "Setup EPEL repo"
   yum_repository:
@@ -51,6 +52,10 @@
     group: root
     force: yes
 
-- name: Run kubespray
-  chdir: "{{ kubespray_dir }}"
-  command: ansible-playbook -i inventory/inventory.yml cluster.yml -b -v --ask-pass
+#- name: Run kubespray
+#  command: ansible-playbook -i {{ kube_script_dir }}/inventory/inventory.yml {{ kubespray_dir }}/cluster.yml -b -v --ask-pass
+#  chdir: "{{ kubespray_dir }}"
+
+- name: Prompt user to run
+  debug:
+    msg: "Change directories to {{ kubespray_dir }} and run: ansible-playbook -i inventory/inventory.yml cluster.yml -b -v --ask-pass"
