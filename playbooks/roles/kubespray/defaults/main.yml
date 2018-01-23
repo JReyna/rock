@@ -3,4 +3,4 @@
 #  - 8.8.8.8
 #  - 8.8.4.4
 
-kubespray_dir: {{ rocknsm_dir }}/kubespray
+kubespray_dir: ""{{ rocknsm_dir }}/kubespray"

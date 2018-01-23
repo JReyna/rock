@@ -21,9 +21,10 @@ all:
     # list of servers to compose the etcd server. You should have at least 3 servers for failover purpose.
     etcd:
       hosts:
-        ansible_hostname: rockserver1.lan
-        ansible_user: root
-        ansible_connection: ssh
+        rockserver1.lan:
+          ansible_hostname: rockserver1.lan
+          ansible_user: root
+          ansible_connection: ssh
 
     k8s-cluster:
       children:

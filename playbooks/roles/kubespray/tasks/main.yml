@@ -1,5 +1,16 @@
 ---
 
+- name: Create kubespray directory
+  file:
+    path: "{{ kubespray_dir }}"
+    mode: 0755
+    state: directory
+
+- name: Download kubespray
+  git:
+    repo: 'https://github.com/kubernetes-incubator/kubespray.git'
+    dest: "{{ kubespray_dir }}"
+
 - name: "Setup EPEL repo"
   yum_repository:
     baseurl: "{{ epel_baseurl }}"
@@ -9,13 +20,13 @@
     mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch"
     name: epel
 
-- name: 'Install python-netaddr package'
+- name: 'Install kubespray packages'
   yum:
     name: '{{ item }}'
     state: 'installed'
   with_items:
-    - { pkg: "python-netaddr", state: installed }
-    - { pkg: "python-pip", state: installed }
+    - python-netaddr
+    - python-pip
 
 - name: Upgrade Jinja 2 template engine
   pip:
@@ -39,14 +50,3 @@
     owner: root
     group: root
     force: yes
-
-- name: Create kubespray directory
-  file:
-    path: "{{ kubespray_dir }}"
-    mode: 0755
-    state: directory
-
-- name: Download kubespray
-  git:
-    repo: 'https://github.com/kubernetes-incubator/kubespray.git'
-    dest: "{{ kubespray_dir }}"
