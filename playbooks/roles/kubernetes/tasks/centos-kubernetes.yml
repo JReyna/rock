@@ -29,12 +29,6 @@
     - kubernetes-cni
     - ebtables
     - ethtool
-#    - python-pip
-
-# TODO Necessary?
-#- name: Install Docker Py
-#  pip:
-#    name: docker-py
 
 - name: Pull K8s Docker images
   docker_image:
@@ -49,3 +43,5 @@
     name: kubelet
     state: started
     enabled: yes
+
+...
