@@ -11,8 +11,88 @@ all:
 
     # Role specific breakout
 
-    kubespray:
+    sensor-common:
+      children:
+        sensors:
+
+    bro:
+      children:
+        sensors:
+
+    docker:
+      children:
+        sensors:
+        servers:
+
+    kubernetes:
+      children:
+        master-servers:
+
+    kibana:
+      children:
+        servers:
+
+    portainer:
+      children:
+        master-servers:
+
+    #haproxy:
+    #  children:
+    #    master-servers:
+
+    elasticsearch:
+      children:
+        servers:
+
+    logstash:
+      children:
+        servers:
+
+    suricata:
+      children:
+        sensors:
+
+    filebeat:
+      children:
+        sensors:
+
+    zookeeper:
+      children:
+        sensors:
+
+    kafka:
+      children:
+        sensors:
+
+    harbor:
+      children:
+        master-servers:
+
+    # Broad categories for convienience
+    sensors:
+
+      vars:
+        home_net: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+
       hosts:
         localhost:
           ansible_hostname: 127.0.0.1
           ansible_connection: local
+
+    servers:
+
+      children:
+
+        master-servers:
+          hosts:
+            rockmaster1.lan:
+              ansible_hostname: rockmaster1.lan
+              ansible_user: root
+              ansible_connection: ssh
+
+        secondary-servers:
+          hosts:
+            rocksecondary1.lan:
+              ansible_hostname: rocksecondary1.lan
+              ansible_user: root
+              ansible_connection: ssh

@@ -1,0 +1,54 @@
+#######################################################
+###################  Kubernetes Install ###################
+#######################################################
+---
+
+- name: "Setup Kubernetes repo"
+  yum_repository:
+    baseurl: "{{ kubernetes_baseurl }}"
+    description: "Kubernetes YUM repo"
+    gpgcheck: true
+    gpgkey: "{{ kubernetes_gpgurl }}"
+    name: kubernetes
+
+- name: 'Install Kubernetes packages'
+  yum:
+    name: "{{ item }}"
+    state: 'installed'
+  with_items:
+    - "kubeadm"
+    - "kubelet"
+    - "kubectl"
+
+- name: 'Disable swap'
+  command: "swapoff -a"
+
+- name: 'Remove swap'
+  mount:
+    path: swap
+    state: absent
+
+- name: 'Change Docker cgroup driver'
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+
+- name: 'Restart Docker'
+  systemd:
+    name: docker
+    state: restarted
+
+- name: 'Start Kubernetes'
+  systemd:
+    name: 'kubelet'
+    state: 'started'
+    enabled: 'yes'
+
+- name: 'Init Kubernetes'
+  command: "kubeadm reset; kubeadm init"
+
+
+...
