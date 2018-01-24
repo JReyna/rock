@@ -24,6 +24,10 @@ all:
         sensors:
         servers:
 
+    kubernetes:
+      children:
+        master-servers:
+
     kibana:
       children:
         servers:
@@ -82,10 +86,14 @@ all:
 
         master-servers:
           hosts:
-            rockserver1.lan:
-              ansible_hostname: rockserver1.lan
+            rockmaster1.lan:
+              ansible_hostname: rockmaster1.lan
               ansible_user: root
               ansible_connection: ssh
 
-        ingest:
-          # currently nothing here
+        secondary-servers:
+          hosts:
+            rocksecondary1.lan:
+              ansible_hostname: rocksecondary1.lan
+              ansible_user: root
+              ansible_connection: ssh
