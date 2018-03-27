@@ -1,51 +1,76 @@
 ######################################################
-##################### Setup Kafka ####################
+################# Setup Kafka ########################
 ######################################################
 ---
 
--
-  name: Install Kafka package
-  yum:
-    name: kafka
-    state: installed
-    
--
-  name: Install Kafkacat package
-  yum:
-    name: kafkacat
-    state: installed
-    
-- 
-  name: Create Kafka data dir
+- name: "Create Directories"
   file:
-    path: "{{ kafka_data_dir }}"
-    mode: 0755
-    owner: "{{ kafka_user }}"
-    group: "{{ kafka_group }}"
+    path: "{{ item }}"
     state: directory
-  when: with_kafka
+    owner: root
+    group: root
+    mode: u+rw,g+rw
+  with_items:
+    - "{{ zookeeper_dir }}"
+    - "{{ kafka_dir }}"
 
-- 
-  name: Set kafka retention
-  lineinfile:
-    dest: "{{ kafka_config_path }}"
-    regexp: "log.retention.hours="
-    line:  "log.retention.hours={{ kafka_retention }}"
-    state: present
-  when: with_kafka
+- name: Install Kafka Templates
+  template:
+    src: "templates/{{ item }}.j2"
+    dest: "{{ kafka_dir }}/{{ item }}"
+    group: root
+    owner: root
+    mode: 0644
+  with_items:
+    - deploy.yml
+    - kafka-service.yml
+    - server.properties
+    - zookeeper_config_map
 
-- 
-  name: Set kafka data dir
-  lineinfile:
-    dest: "{{ kafka_config_path }}"
-    regexp: "log.dirs="
-    line: "log.dirs={{ kafka_data_dir }}"
-  when: with_kafka
+- name: Install Zookeeper Templates
+  template:
+    src: "templates/{{ item }}.j2"
+    dest: "{{ zookeeper_dir }}/{{ item }}"
+    group: root
+    owner: root
+    mode: 0644
+  with_items:
+    - zookeeper_config_map
 
-- 
-  name: Enable and start kafka
-  service:
-    name: kafka
-    state: "{{ 'started' if enable_kafka else 'stopped' }}"
-    enabled: "{{ enable_kafka }}"
-  when: with_kafka
+- name: Flush Kafka Service
+  command: 'kubectl delete -f {{ kafka_dir}}/kafka-service.yml --ignore-not-found=true'
+
+- name: Flush Deployment
+  shell: |
+    kubectl delete -f {{ kafka_dir }}/deploy.yml --ignore-not-found=true
+    while [ $(kubectl get -f {{ kafka_dir }}/deploy.yml | tail -n +2 | wc -l) != '0' ]; do
+      echo -n .;
+      sleep 1;
+    done;
+    sleep 5;
+
+- name: Flush Config Maps
+  command: 'kubectl delete configmap {{ item }} --ignore-not-found=true'
+  with_items:
+    - kafka
+    - zookeeper
+
+# This task uses kafka_config_map and feeds it into Kubernetes as a configuration map which it then uses
+# to build the container
+- name: Create Kafka Config
+  command: 'kubectl create configmap kafka --from-file {{ kafka_dir }}/server.properties'
+
+# This does the same, but with Zookeeper
+- name: Create Zookeeper Config
+  command: 'kubectl create configmap zookeeper --from-file {{ zookeeper_dir }}/zookeeper_config_map'
+
+- name: Run the kafka/zookeeper deploy file
+  shell: |
+    kubectl apply -f {{ kafka_dir }}/deploy.yml
+    while [ $(kubectl get -f {{ kafka_dir }}/deploy.yml | tail -n +2 | awk '{ print $3}') == '0' ]; do
+      echo -n .;
+      sleep 1;
+    done;
+
+- name: Deploy Kafka Service
+  command: 'kubectl create -f {{ kafka_dir}}/kafka-service.yml'

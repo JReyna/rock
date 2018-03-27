@@ -1,0 +1,16 @@
+#######################################################
+###################  Kubernetes Common ###############
+#######################################################
+---
+
+- include_tasks: disable_swap.yml
+- include_tasks: kernel_mods.yml
+- include_tasks: sysctl.yml
+- include_tasks: repo.yml
+- include_tasks: install.yml
+- include_tasks: services.yml
+- include_tasks: env.yml
+- include_tasks: cred_dir.yml
+- meta: flush_handlers
+
+...
