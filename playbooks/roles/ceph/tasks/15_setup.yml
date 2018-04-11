@@ -1,7 +1,7 @@
 ---
 - name: Purge Ceph
   shell: |
-    ceph-deploy purge \
+    timeout 120 ceph-deploy purge \
     {{ (groups['master-servers'] + groups['nodes']) | join(' ') }}
     ceph-deploy purgedata \
     {{ (groups['master-servers'] + groups['nodes']) | join(' ') }}
@@ -61,11 +61,19 @@
   with_items:
     - "{{ ( groups['master-servers'] + groups['nodes'] ) }}"
 
-- name: Set Placement Group count
-  shell: |
-    ceph osd pool set rbd pg_num {{ osd_count | int * 32 }}
-    sleep 30
-    ceph osd pool set rbd pgp_num {{ osd_count | int * 32 }}
+- name: Set Placement Group pg_num
+  shell: "ceph osd pool set rbd pg_num {{ osd_count | int * 32 }}"
+  register: task_result
+  until: '"Error" not in task_result.stderr'
+  retries: 60
+  delay: 2
+
+- name: Set Placement Group pgp_num
+  shell: ceph osd pool set rbd pgp_num {{ osd_count | int * 32 }}
+  register: task_result
+  until: task_result.rc == 0
+  retries: 60
+  delay: 2
 
 - name: Get Ceph key
   shell: |

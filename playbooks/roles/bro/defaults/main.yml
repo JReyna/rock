@@ -2,7 +2,8 @@
 ---
 
 bro_image: "tfplenum/bro"
-bro_ver: "latest"
+bro_ver: "1.0"
 bro_dir: "{{ install_dir }}/bro"
+num_bro_replicas: "{{ groups['sensors'] | length }}"
 
 ...

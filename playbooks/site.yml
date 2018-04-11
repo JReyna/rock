@@ -5,66 +5,105 @@
 # We follow the guidance to include naming conventions there.
 
 ---
-- hosts: all
-  tasks:
+- name: Common Setup
+  hosts: all
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - common
     - chrony
+  tags:
+    - common
 
 - name: Configure kube master
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - kubernetes/common
     - kubernetes/master
   tags:
-  - kube-master
+    - kube-master
 
 - name: Configure kube nodes
   hosts: nodes
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - kubernetes/common
     - kubernetes/node
   tags:
-  - add-node
-  - kube-node
+    - add-node
+    - kube-node
 
 - name: Setup Ceph
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - ceph
   tags:
-  - ceph
+    - ceph
 
 - name: Deploy Elasticsearch
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - elasticsearch
   tags:
-  - elasticsearch
+    - elasticsearch
 
 - name: Deploy Logstash
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - logstash
   tags:
-  - logstash
+    - logstash
+
+- name: Deploy metricbeats
+  hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
+  roles:
+    - metricbeat
+  tags:
+    - metricbeat
 
 - name: Deploy Kibana
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - kibana
   tags:
-  - kibana
+    - kibana
 
 - name: Deploy Kafka
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - kafka
   tags:
-  - kafka
+    - kafka
 
 - name: Deploy Bro
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - bro
   tags:
@@ -72,16 +111,22 @@
 
 - name: Deploy Moloch
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - moloch
   tags:
-  - moloch
+    - moloch
 
 - name: Deploy Suricata
   hosts: master-servers
+  gather_facts: no
+  pre_tasks:
+    - setup:
   roles:
     - suricata
   tags:
-  - suricata
+    - suricata
 
 ...

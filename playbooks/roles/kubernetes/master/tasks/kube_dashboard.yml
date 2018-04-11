@@ -1,3 +1,0 @@
----
-- name: Install Dashboard
-  command: "kubectl apply -f {{ kube_dir }}/dashboard.yml"

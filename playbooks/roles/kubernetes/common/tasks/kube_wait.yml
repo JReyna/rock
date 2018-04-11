@@ -4,7 +4,7 @@
 # "kubectl get pods -o json" will return the full json structure
 
 # Variables:
-# type (required): kubernetes resource type using one of the following: pod, pods, node, statefulset, ds
+# type (required): kubernetes resource type using one of the following: pod, pods, node, statefulset, ds, deployments
 # resource_name (optional): kubernetes resource name
 # namespace (optional): kubernetes namespace (ie: kube-system)
 #   Note: When using type node namespace can be any string
@@ -48,12 +48,13 @@
 
 - import_tasks: build_kubectl.yml
 
-- name: Kube | Wait for {{ type }}
-  shell: | 
+- name: Kube | Wait for "{{ resource_name }} {{ label }} {{ type }}"
+  shell: |
     {{ kubectl }}
   register: kube_wait_result
   until: kube_wait_result.stdout == ""
-  retries: 30
-  delay: 15
+  retries: 45
+  delay: 10
   when: kubectl is defined
+  failed_when: kube_wait_result.rc != 0 and kube_wait_result.rc != 1
   #ignore_errors: yes

@@ -5,7 +5,7 @@ metadata:
   labels:
     component: bro
 spec:
-  replicas: 1
+  replicas: {{ groups['sensors'] | length }}
   selector:
     matchLabels:
      component: bro
@@ -75,8 +75,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: role
+              - key: component
                 operator: In
                 values:
-                - sensor
+                - bro
             topologyKey: "kubernetes.io/hostname"
